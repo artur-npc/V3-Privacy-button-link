@@ -20,6 +20,10 @@ button:hover { background: #f2f2f2; }
 .privacy-link a { color: #1e3a8a; }
 nav { font-size: 13px; margin-bottom: 16px; }
 nav a { margin-right: 12px; color: #1e3a8a; }
+.loader-presets { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 13px; }
+.loader-presets span { color: #555; }
+.loader-presets .preset { padding: 5px 14px; border-radius: 14px; border: 1px solid #bbb; background: #fff; }
+.loader-presets .preset.active { background: #1e3a8a; color: #fff; border-color: #1e3a8a; }
 .loader-panel label { display: block; font-size: 13px; margin-bottom: 10px; }
 .loader-panel input[type=text] { width: 100%; padding: 7px 9px; margin-top: 4px; font-family: monospace; font-size: 12px; border: 1px solid #bbb; border-radius: 4px; box-sizing: border-box; }
 .loader-panel label.cb { display: flex; align-items: center; gap: 6px; }

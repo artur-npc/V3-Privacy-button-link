@@ -18,6 +18,14 @@
 (function () {
   var DEFAULT_LOADER = 'https://web.cmp.usercentrics-sandbox.eu/ui/loader.js';
   var DEFAULT_SETTINGS_ID = 'cqNAsnaCNNTg5s';
+
+  // Predefined framework configurations — quick-switch presets.
+  var PRESETS = [
+    { label: 'CCPA', settingsId: 'cqNAsnaCNNTg5s' },
+    { label: 'TCF', settingsId: 'GQIS-mIN1kW_ah' },
+    { label: 'GDPR', settingsId: 'HTrWecvQcUoC94' },
+  ];
+
   var LS_LOADER = 'uc-test:loaderUrl';
   var LS_SETTINGS = 'uc-test:settingsId';
   var LS_SANDBOX = 'uc-test:sandbox';
@@ -226,7 +234,16 @@
   function renderLoaderPanel(panelSel) {
     var host = document.querySelector(panelSel);
     if (!host) return;
+
+    var activeSid = getSettingsId();
+    var presetBtns = PRESETS.map(function (p) {
+      var active = p.settingsId === activeSid ? ' active' : '';
+      return '<button type="button" class="preset' + active + '" data-sid="' + p.settingsId + '">' +
+        p.label + '</button>';
+    }).join('');
+
     host.innerHTML =
+      '<div class="loader-presets"><span>Framework:</span>' + presetBtns + '</div>' +
       '<label>Loader URL' +
       '<input type="text" id="uc-loader-url" placeholder="https://…/ui/loader.js"></label>' +
       '<label>settingsId' +
@@ -245,6 +262,14 @@
       'Active loader: ' + getLoaderUrl() +
       '  ·  settingsId=' + getSettingsId() +
       '  ·  data-sandbox=' + (getSandbox() ? '1' : '(off)');
+
+    // Preset click — switch settingsId, keep loader URL / sandbox, reload.
+    host.querySelectorAll('.preset').forEach(function (b) {
+      b.addEventListener('click', function () {
+        lsSet(LS_SETTINGS, b.getAttribute('data-sid'));
+        location.reload();
+      });
+    });
 
     host.querySelector('#uc-loader-apply').addEventListener('click', function () {
       var url = host.querySelector('#uc-loader-url').value.trim();

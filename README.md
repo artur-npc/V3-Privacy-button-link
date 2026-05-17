@@ -18,8 +18,16 @@ kit — paste a loader URL, set the `settingsId` and the `data-sandbox` flag, th
 **Apply & reload**: the page reloads and re-attaches the CMP with the new script.
 Settings persist in `localStorage`; **Reset to default** restores them.
 
+**Framework presets** — one-click switch between predefined configurations:
+
+| Preset | settingsId |
+| --- | --- |
+| CCPA | `cqNAsnaCNNTg5s` |
+| TCF | `GQIS-mIN1kW_ah` |
+| GDPR | `HTrWecvQcUoC94` |
+
 Defaults: loader `https://web.cmp.usercentrics-sandbox.eu/ui/loader.js`,
-settingsId `cqNAsnaCNNTg5s`, `data-sandbox="1"`.
+settingsId `cqNAsnaCNNTg5s` (CCPA), `data-sandbox="1"`.
 
 ## Run
 
