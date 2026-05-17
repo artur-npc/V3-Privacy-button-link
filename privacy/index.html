@@ -18,6 +18,16 @@
   </nav>
 
   <div class="card">
+    <h2>Loader</h2>
+    <p class="sub" style="margin:0 0 12px">
+      Paste a loader URL and click <strong>Apply &amp; reload</strong> — the page
+      reloads and re-attaches the CMP with the new script. Settings persist in
+      <code>localStorage</code>.
+    </p>
+    <div class="loader-panel" id="loader-panel"></div>
+  </div>
+
+  <div class="card">
     <h2>Configuration required (Admin Interface)</h2>
     <ul class="scenario">
       <li>Settings type: <strong>US framework</strong> (CCPA / US Privacy)</li>
@@ -26,9 +36,8 @@
       <li><strong>"Show CMP on page load" → DISABLED</strong></li>
     </ul>
     <div class="note">
-      Serve the repo root as the web root so this page
-      is reachable at <code>/privacy/</code>. The configured path <code>/privacy</code> then
-      matches this pathname. Replace <strong>YOUR_US_SETTINGS_ID</strong> below.
+      Serve the repo root as the web root so this page is reachable at
+      <code>/privacy/</code>. The configured path <code>/privacy</code> then matches this pathname.
     </div>
   </div>
 
@@ -62,13 +71,9 @@
     window.UC_TEST_CASE = { name: 'Case B — Specific pages (MATCH /privacy)', expectPrivacyButton: true };
   </script>
   <script src="../cmp-test-kit.js"></script>
-  <script>ucRenderToolbar('#toolbar', '#result');</script>
-
-  <!-- REPLACE YOUR_US_SETTINGS_ID — US config, Privacy Button, -->
-  <!-- "Show on specific pages" = /privacy, Show CMP disabled.  -->
-  <script id="usercentrics-cmp"
-    src="https://web.cmp.usercentrics-sandbox.eu/ui/loader.js"
-    data-settings-id="YOUR_US_SETTINGS_ID">
+  <script>
+    ucRenderLoaderPanel('#loader-panel');
+    ucRenderToolbar('#toolbar', '#result');
   </script>
 </body>
 </html>

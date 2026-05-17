@@ -18,6 +18,16 @@
   </nav>
 
   <div class="card">
+    <h2>Loader</h2>
+    <p class="sub" style="margin:0 0 12px">
+      Paste a loader URL and click <strong>Apply &amp; reload</strong> — the page
+      reloads and re-attaches the CMP with the new script. Settings persist in
+      <code>localStorage</code>.
+    </p>
+    <div class="loader-panel" id="loader-panel"></div>
+  </div>
+
+  <div class="card">
     <h2>Configuration required (Admin Interface)</h2>
     <ul class="scenario">
       <li>Same US config as Case B — Privacy Button, <strong>Show on specific pages</strong> = <code>/privacy</code></li>
@@ -60,12 +70,9 @@
     window.UC_TEST_CASE = { name: 'Case C — Specific pages (NO MATCH /account)', expectPrivacyButton: false };
   </script>
   <script src="../cmp-test-kit.js"></script>
-  <script>ucRenderToolbar('#toolbar', '#result');</script>
-
-  <!-- REPLACE YOUR_US_SETTINGS_ID — same US config as Case B. -->
-  <script id="usercentrics-cmp"
-    src="https://web.cmp.usercentrics-sandbox.eu/ui/loader.js"
-    data-settings-id="YOUR_US_SETTINGS_ID">
+  <script>
+    ucRenderLoaderPanel('#loader-panel');
+    ucRenderToolbar('#toolbar', '#result');
   </script>
 </body>
 </html>

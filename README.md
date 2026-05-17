@@ -11,13 +11,15 @@ US framework, with **"Show CMP on page load" disabled**.
 | `privacy/index.html` | Show on specific pages — path matches |
 | `account/index.html` | Show on specific pages — path does not match |
 
-## Setup
+## Loader
 
-1. Create a **US framework** configuration in the Admin Interface:
-   - Privacy Trigger → Layout = **Privacy Button**, Position Bottom Right.
-   - Disable **"Show CMP on page load"**.
-   - For the specific-pages cases, add page path **`/privacy`**.
-2. Replace `YOUR_US_SETTINGS_ID` in every `.html` file with that settingsId.
+Every page has a **Loader** panel. The Usercentrics loader is injected by the test
+kit — paste a loader URL, set the `settingsId` and the `data-sandbox` flag, then click
+**Apply & reload**: the page reloads and re-attaches the CMP with the new script.
+Settings persist in `localStorage`; **Reset to default** restores them.
+
+Defaults: loader `https://web.cmp.usercentrics-sandbox.eu/ui/loader.js`,
+settingsId `cqNAsnaCNNTg5s`, `data-sandbox="1"`.
 
 ## Run
 
@@ -28,6 +30,14 @@ python3 -m http.server 8090
 ```
 
 Open `/privacy-button-us.html`, `/privacy/` and `/account/`.
+
+## Setup
+
+In the Admin Interface use a **US framework** configuration:
+
+- Privacy Trigger → Layout = **Privacy Button**, Position Bottom Right.
+- Disable **"Show CMP on page load"**.
+- For the specific-pages cases, add page path **`/privacy`**.
 
 ## What to verify
 

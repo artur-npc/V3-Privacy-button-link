@@ -1,19 +1,55 @@
 /* ============================================================================
  * Shared CMP test kit
- * Used by all test pages. Each page sets `window.UC_TEST_CASE` BEFORE loading
- * this script:
+ *
+ * Each page sets `window.UC_TEST_CASE` BEFORE loading this script:
  *
  *   window.UC_TEST_CASE = {
  *     name: 'Show on all pages',
  *     expectPrivacyButton: true,   // true = button must render, false = must NOT
  *   };
  *
- * Render the toolbar with: ucRenderToolbar('#toolbar', '#result')
+ * The kit injects the Usercentrics loader itself. The loader URL, settingsId and
+ * the data-sandbox flag are overridable at runtime via the loader panel — paste a
+ * new loader URL, click "Apply & reload" and the page reloads with the new script.
+ *
+ *   ucRenderLoaderPanel('#loader-panel')   -> loader override UI
+ *   ucRenderToolbar('#toolbar', '#result') -> automated checks toolbar
  * ========================================================================== */
 (function () {
+  var DEFAULT_LOADER = 'https://web.cmp.usercentrics-sandbox.eu/ui/loader.js';
+  var DEFAULT_SETTINGS_ID = 'cqNAsnaCNNTg5s';
+  var LS_LOADER = 'uc-test:loaderUrl';
+  var LS_SETTINGS = 'uc-test:settingsId';
+  var LS_SANDBOX = 'uc-test:sandbox';
+
   var CASE = window.UC_TEST_CASE || { name: 'unnamed', expectPrivacyButton: true };
   var resultEl = null;
 
+  /* --- persisted loader config ------------------------------------------- */
+  function lsGet(key, dflt) {
+    try { var v = localStorage.getItem(key); return v === null ? dflt : v; } catch (e) { return dflt; }
+  }
+  function lsSet(key, val) { try { localStorage.setItem(key, val); } catch (e) {} }
+  function lsDel(key) { try { localStorage.removeItem(key); } catch (e) {} }
+
+  function getLoaderUrl() { return lsGet(LS_LOADER, DEFAULT_LOADER); }
+  function getSettingsId() { return lsGet(LS_SETTINGS, DEFAULT_SETTINGS_ID); }
+  function getSandbox() { return lsGet(LS_SANDBOX, '1') === '1'; }
+
+  /* --- loader injection --------------------------------------------------- */
+  // Injects <script id="usercentrics-cmp" …> dynamically so the loader URL can
+  // be swapped at runtime without editing the HTML.
+  function injectLoader() {
+    if (document.getElementById('usercentrics-cmp')) return;
+    var s = document.createElement('script');
+    s.id = 'usercentrics-cmp';
+    s.src = getLoaderUrl();
+    s.setAttribute('data-settings-id', getSettingsId());
+    if (getSandbox()) s.setAttribute('data-sandbox', '1');
+    (document.body || document.head).appendChild(s);
+  }
+
+  /* --- log helpers -------------------------------------------------------- */
   function out(text, cls) {
     if (!resultEl) return;
     resultEl.textContent = text;
@@ -54,6 +90,8 @@
     var root = getCmpRoot();
     var lines = [];
     lines.push('Test case:      ' + CASE.name);
+    lines.push('Loader:         ' + getLoaderUrl());
+    lines.push('settingsId:     ' + getSettingsId() + '   data-sandbox: ' + (getSandbox() ? '1' : '(off)'));
     lines.push('window.UC_UI:   ' + (window.UC_UI ? 'OK exists' : 'FAIL not found'));
     lines.push('window.__ucCmp: ' + (window.__ucCmp ? 'OK exists' : 'FAIL not found'));
     lines.push('#usercentrics-cmp-ui: ' + (root ? 'OK in DOM' : 'FAIL not in DOM'));
@@ -160,7 +198,7 @@
     lines.push('  href:     ' + location.href);
     lines.push('  pathname: ' + location.pathname);
     lines.push('');
-    lines.push('"Show on specific pages" matching rule (helpers/matchesPage.ts):');
+    lines.push('"Show on specific pages" matching rule:');
     lines.push('  • a configured path matches when the current pathname equals it,');
     lines.push('    or starts with it at a "/" segment boundary.');
     lines.push('  • "/privacy" matches /privacy and /privacy/x — NOT /privacyzone.');
@@ -184,7 +222,50 @@
       .catch(function (e) { log('FAIL clearUserSession() — ' + e); });
   }
 
-  /* --- Toolbar rendering -------------------------------------------------- */
+  /* --- Loader override panel --------------------------------------------- */
+  function renderLoaderPanel(panelSel) {
+    var host = document.querySelector(panelSel);
+    if (!host) return;
+    host.innerHTML =
+      '<label>Loader URL' +
+      '<input type="text" id="uc-loader-url" placeholder="https://…/ui/loader.js"></label>' +
+      '<label>settingsId' +
+      '<input type="text" id="uc-settings-id" placeholder="settingsId"></label>' +
+      '<label class="cb"><input type="checkbox" id="uc-sandbox"> add <code>data-sandbox="1"</code></label>' +
+      '<div class="loader-actions">' +
+      '<button id="uc-loader-apply">Apply &amp; reload</button>' +
+      '<button id="uc-loader-reset">Reset to default</button>' +
+      '</div>' +
+      '<div class="loader-active" id="uc-loader-active"></div>';
+
+    host.querySelector('#uc-loader-url').value = getLoaderUrl();
+    host.querySelector('#uc-settings-id').value = getSettingsId();
+    host.querySelector('#uc-sandbox').checked = getSandbox();
+    host.querySelector('#uc-loader-active').textContent =
+      'Active loader: ' + getLoaderUrl() +
+      '  ·  settingsId=' + getSettingsId() +
+      '  ·  data-sandbox=' + (getSandbox() ? '1' : '(off)');
+
+    host.querySelector('#uc-loader-apply').addEventListener('click', function () {
+      var url = host.querySelector('#uc-loader-url').value.trim();
+      var sid = host.querySelector('#uc-settings-id').value.trim();
+      var sb = host.querySelector('#uc-sandbox').checked;
+      if (!url) { alert('Loader URL is empty.'); return; }
+      if (!sid) { alert('settingsId is empty.'); return; }
+      lsSet(LS_LOADER, url);
+      lsSet(LS_SETTINGS, sid);
+      lsSet(LS_SANDBOX, sb ? '1' : '0');
+      location.reload();
+    });
+    host.querySelector('#uc-loader-reset').addEventListener('click', function () {
+      lsDel(LS_LOADER);
+      lsDel(LS_SETTINGS);
+      lsDel(LS_SANDBOX);
+      location.reload();
+    });
+  }
+
+  /* --- Checks toolbar ----------------------------------------------------- */
   var BUTTONS = [
     ['CMP status', checkInit],
     ['Privacy Button rendered?', checkPrivacyButton],
@@ -210,6 +291,7 @@
   window.addEventListener('UC_UI_INITIALIZED', function () { log('UC_UI_INITIALIZED received'); });
   window.addEventListener('UC_UI_CMP_EVENT', function (e) { log('UC_UI_CMP_EVENT: ' + JSON.stringify(e.detail)); });
 
+  window.ucRenderLoaderPanel = renderLoaderPanel;
   window.ucRenderToolbar = renderToolbar;
   window.ucTestKit = {
     checkInit: checkInit,
@@ -218,4 +300,7 @@
     checkBannerHidden: checkBannerHidden,
     checkPagePath: checkPagePath,
   };
+
+  // Inject the loader as soon as the kit runs.
+  injectLoader();
 })();
