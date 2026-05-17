@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Privacy Button — US framework (Show on all pages)</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Privacy Button — US framework <span class="case">Case A · Show on all pages</span></h1>
+  <p class="sub">Privacy Button rendering for the US framework when "Show CMP on page load" is disabled.</p>
+
+  <nav>
+    <strong>Test cases:</strong>
+    <a href="privacy-button-us.html">A · Show on all pages</a>
+    <a href="privacy/index.html">B · Specific pages — match</a>
+    <a href="account/index.html">C · Specific pages — no match</a>
+  </nav>
+
+  <div class="card">
+    <h2>Configuration required (Admin Interface)</h2>
+    <ul class="scenario">
+      <li>Settings type: <strong>US framework</strong> (CCPA / US Privacy)</li>
+      <li>Privacy Trigger → Layout: <strong>Privacy Button</strong></li>
+      <li>Settings: Position Bottom Right, <strong>Show on all pages</strong></li>
+      <li><strong>"Show CMP on page load" → DISABLED</strong> (<code>ccpa.showOnPageLoad = false</code>)</li>
+    </ul>
+    <div class="note">
+      Replace <strong>YOUR_US_SETTINGS_ID</strong> at the bottom of this file with the
+      settingsId of a US configuration set up exactly as above.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Expected result</h2>
+    <div class="expect">
+      <div class="fix">
+        <strong>✅ Pass</strong><br>
+        First-layer banner stays hidden (Show CMP disabled), but the floating
+        <strong>Privacy Button</strong> appears bottom-right and opens the consent layer.
+      </div>
+      <div class="bug">
+        <strong>❌ Fail</strong><br>
+        Nothing renders on page load — the Privacy Button does not appear bottom-right.
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Privacy Trigger — Privacy Link variant</h2>
+    <p class="sub" style="margin:0 0 8px">
+      If the Admin "Privacy Trigger" layout is set to <strong>Privacy Link</strong> instead
+      of Privacy Button, no floating button renders — the integrator places this link.
+      Use it to verify the Privacy Link layout on the same config.
+    </p>
+    <p class="privacy-link">
+      <a href="#" data-uc-privacy-link onclick="__ucCmp.showSecondLayer(); return false;">Privacy Settings</a>
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>Manual checklist</h2>
+    <ol class="scenario">
+      <li>Open this page in a fresh session (clear localStorage / use incognito).</li>
+      <li>First-layer banner must <strong>NOT</strong> auto-appear (Show CMP disabled).</li>
+      <li>The Privacy Button <strong>must</strong> be visible in the bottom-right corner.</li>
+      <li>Clicking the Privacy Button opens the consent layer.</li>
+      <li>No errors in the browser console.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h2>Automated checks</h2>
+    <div class="toolbar" id="toolbar"></div>
+  </div>
+
+  <div class="card">
+    <h2>Log</h2>
+    <div id="result">Waiting for CMP to load…</div>
+  </div>
+
+  <script>
+    window.UC_TEST_CASE = { name: 'Case A — Show on all pages', expectPrivacyButton: true };
+  </script>
+  <script src="cmp-test-kit.js"></script>
+  <script>ucRenderToolbar('#toolbar', '#result');</script>
+
+  <!-- ============================================================= -->
+  <!-- REPLACE YOUR_US_SETTINGS_ID with a US config:                 -->
+  <!--   Privacy Trigger = Privacy Button, Show on all pages,        -->
+  <!--   "Show CMP on page load" = disabled.                         -->
+  <!-- ============================================================= -->
+  <script id="usercentrics-cmp"
+    src="https://web.cmp.usercentrics-sandbox.eu/ui/loader.js"
+    data-settings-id="YOUR_US_SETTINGS_ID">
+  </script>
+</body>
+</html>

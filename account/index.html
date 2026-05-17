@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Privacy Button — US framework (specific pages — NO MATCH)</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <h1>Privacy Button — US framework <span class="case">Case C · Specific pages — NO MATCH</span></h1>
+  <p class="sub">This page lives at <code>/account/</code> — it must NOT match the configured page path <code>/privacy</code>.</p>
+
+  <nav>
+    <strong>Test cases:</strong>
+    <a href="../privacy-button-us.html">A · Show on all pages</a>
+    <a href="../privacy/index.html">B · Specific pages — match</a>
+    <a href="../account/index.html">C · Specific pages — no match</a>
+  </nav>
+
+  <div class="card">
+    <h2>Configuration required (Admin Interface)</h2>
+    <ul class="scenario">
+      <li>Same US config as Case B — Privacy Button, <strong>Show on specific pages</strong> = <code>/privacy</code></li>
+      <li><strong>"Show CMP on page load" → DISABLED</strong></li>
+    </ul>
+    <div class="note">
+      This page is the negative control: <code>/account</code> is not in the configured
+      paths, so the Privacy Button must stay hidden here while still appearing on
+      <a href="../privacy/index.html">Case B</a>.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Expected result</h2>
+    <div class="expect">
+      <div class="fix">
+        <strong>✅ Pass</strong><br>
+        <strong>No Privacy Button</strong> on this page — <code>/account</code> is not in
+        the configured page paths.
+      </div>
+      <div class="bug">
+        <strong>❌ Fail</strong><br>
+        The Privacy Button appears here — the "Show on specific pages" filter
+        leaked the button onto a non-listed page.
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Automated checks</h2>
+    <div class="toolbar" id="toolbar"></div>
+  </div>
+
+  <div class="card">
+    <h2>Log</h2>
+    <div id="result">Waiting for CMP to load…</div>
+  </div>
+
+  <script>
+    window.UC_TEST_CASE = { name: 'Case C — Specific pages (NO MATCH /account)', expectPrivacyButton: false };
+  </script>
+  <script src="../cmp-test-kit.js"></script>
+  <script>ucRenderToolbar('#toolbar', '#result');</script>
+
+  <!-- REPLACE YOUR_US_SETTINGS_ID — same US config as Case B. -->
+  <script id="usercentrics-cmp"
+    src="https://web.cmp.usercentrics-sandbox.eu/ui/loader.js"
+    data-settings-id="YOUR_US_SETTINGS_ID">
+  </script>
+</body>
+</html>
